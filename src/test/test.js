@@ -9,11 +9,23 @@ describe('payload', function () {
   it('car quantity with owners older than 20 years', function () {
 
     let answer;
+    let cars    = [];
+    let allCars = payload.data
+                         .filter((car) => {
+        return car.type == 'Car';
+  }
+    );
 
-    /**
-     * you code here
-     */
+    allCars.forEach((car) => {
+      car.owners.forEach((owner) => {
+      if (owner.personalInfo.age > 20) {
+      cars.push(car);
+    }
+  }
+    )
+  });
 
+    answer = cars.length;
     assert.equal(answer, 2);
 
   });
@@ -21,11 +33,22 @@ describe('payload', function () {
   it('all car colors separated by comma without duplicates', function () {
 
     let answer;
+    let carColors;
+    let allCars = payload.data
+                         .filter((car) => {
+        return car.type == 'Car';
+  }
+    );
 
-    /**
-     * you code here
-     */
+    carColors = allCars.map((car) => {
+        return car.attrs.color;
+  });
 
+    carColors = carColors.filter(function (elem, index, self) {
+      return index == self.indexOf(elem);
+    });
+
+    answer = carColors.join();
     assert.equal(answer, 'red,yellow');
 
   });
@@ -33,11 +56,20 @@ describe('payload', function () {
   it('id\'s of all vehicles separated by comma', function () {
 
     let answer;
+    let vehicles = payload.data.filter((vehicle) => {
+        return (vehicle.type == 'Car' || vehicle.type == 'Bicycle');
+  }
+    );
 
-    /**
-     * you code here
-     */
+    let vehiclesIds = vehicles.map((vehicle) => {
+        return vehicle.id;
+  });
 
+    vehiclesIds = vehiclesIds.filter(function (elem, index, self) {
+      return index == self.indexOf(elem);
+    });
+
+    answer = vehiclesIds.join();
     assert.equal(answer, '1,3,6,4,2');
 
   });
@@ -45,10 +77,14 @@ describe('payload', function () {
   it('summary price of all items', function () {
 
     let answer;
+    let items       = payload.data;
+    let itemsPrices = items.map(item => item.attrs.price);
 
-    /**
-     * you code here
-     */
+    function sum(total, num) {
+      return total + num;
+    };
+
+    answer = itemsPrices.reduce(sum);
 
     assert.equal(answer, 42800);
 
@@ -57,11 +93,23 @@ describe('payload', function () {
   it('price of all things john has own', function () {
 
     let answer;
+    let johnsStuff = [];
 
-    /**
-     * you code here
-     */
+    payload.data.forEach((item) => {
+      item.owners.forEach((owner) => {
+      if (owner == people.johnSmith) {
+      johnsStuff.push(item);
+    }
+  })
+  });
 
+    let prices = johnsStuff.map(item => item.attrs.price);
+
+    function sum(total, num) {
+      return total + num;
+    };
+
+    answer = prices.reduce(sum);
     assert.equal(answer, 25000);
 
   });
@@ -69,12 +117,22 @@ describe('payload', function () {
   it('all cities', function () {
 
     let answer;
+    let owners = [];
 
-    /**
-     * you code here
-     */
+    payload.data.forEach((item) => {
+      if (item.owners.length) {
+      item.owners.forEach((owner) => {
+        owners.push(owner);
+    })
+    }
+  });
 
+    owners = owners.filter(function (elem, index, self) {
+      return index == self.indexOf(elem);
+    });
+
+    let cities = owners.map(owner => owner.cities);
+    answer = cities.reduce((a,b) => a.concat(b)).join();
     assert.equal(answer, 'New York,Boston,Columbia,Rapture');
-
   });
 });
